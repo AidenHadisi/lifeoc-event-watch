@@ -1,4 +1,4 @@
-use crate::result::{Error::*, Result};
+use crate::result::{Error, Result};
 use crate::{event::EventList, prompt::Prompt};
 use chat_gpt_rs::{
     prelude::Api,
@@ -40,7 +40,7 @@ impl ScheduleParser for GPTScheduleParser {
                 ..Default::default()
             })
             .await
-            .map_err(|e| ParserError(e.to_string()))?
+            .map_err(|e| Error::Parser(e.to_string()))?
             .try_into()
     }
 }

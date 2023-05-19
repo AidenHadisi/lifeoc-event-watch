@@ -9,13 +9,13 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     #[error("Parser error: {0}")]
     /// Error returned by the parser.
-    ParserError(String),
+    Parser(String),
 
     #[error("API error: {0}")]
     /// Error returned by the API.
-    ApiError(String),
+    Api(String),
 
     #[error("Internal server error: {0}")]
     /// Internal server error.
-    InternalServerError(String),
+    InternalServer(String),
 }

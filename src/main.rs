@@ -5,7 +5,7 @@ use futures::future::try_join_all;
 use lambda_http::{run, service_fn, Body, Request, Response};
 use log::info;
 use parser::ScheduleParser;
-use result::{Error::*, Result};
+use result::{Error, Result};
 use std::env;
 
 use crate::events_api::EventsAPI;
@@ -26,7 +26,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>> {
     );
 
     let Body::Text(text) = event.body() else {
-        return Err(InternalServerError("Invalid body".to_string()));
+        return Err(Error::InternalServer("Invalid body".to_string()));
     };
 
     info!("Received text: {}", text);
@@ -44,7 +44,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>> {
         .status(200)
         .header("content-type", "text/html")
         .body("Recieved".into())
-        .map_err(|e| InternalServerError(e.to_string()))?;
+        .map_err(|e| Error::InternalServer(e.to_string()))?;
 
     Ok(resp)
 }
@@ -65,7 +65,7 @@ async fn main() -> Result<()> {
 
     run(service_fn(function_handler))
         .await
-        .map_err(|e| InternalServerError(e.to_string()))?;
+        .map_err(|e| Error::InternalServer(e.to_string()))?;
 
     Ok(())
 }

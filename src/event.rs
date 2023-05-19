@@ -22,7 +22,7 @@ impl TryFrom<Response> for EventList {
         let message = value
             .choices
             .get(0)
-            .ok_or(Error::ParserError("No choices found".to_string()))?
+            .ok_or(Error::Parser("No choices found".to_string()))?
             .message
             .content
             .as_str();
@@ -30,7 +30,7 @@ impl TryFrom<Response> for EventList {
         info!("Response: {:?}", message);
 
         let result = serde_json::from_str::<Vec<Event>>(message)
-            .map_err(|e| Error::ParserError(e.to_string()))?;
+            .map_err(|e| Error::Parser(e.to_string()))?;
 
         Ok(Self(result))
     }

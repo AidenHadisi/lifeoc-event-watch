@@ -2,7 +2,7 @@ use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
 use reqwest::Client;
 
 use crate::event::Event;
-use crate::result::{Error::*, Result};
+use crate::result::{Error, Result};
 
 /// An API that can create events.
 pub trait EventsAPI {
@@ -18,7 +18,7 @@ pub struct WPEvents {
 impl WPEvents {
     /// Creates a new WPEvents.
     pub fn new(username: &str, password: &str) -> Self {
-        let credentials = base64::encode(&format!("{}:{}", username, password));
+        let credentials = base64::encode(format!("{}:{}", username, password));
 
         // Create the authorization header value
         let auth_header_value = HeaderValue::from_str(&format!("Basic {}", credentials)).unwrap();
@@ -39,10 +39,10 @@ impl EventsAPI for WPEvents {
             .json(&event)
             .send()
             .await
-            .map_err(|e| ApiError(e.to_string()))?
+            .map_err(|e| Error::Api(e.to_string()))?
             .status()
             .is_success()
-            .then(|| Ok(()))
-            .unwrap_or_else(|| Err(ApiError("Failed to create event".to_string())))
+            .then_some(Ok(()))
+            .unwrap_or_else(|| Err(Error::Api("Failed to create event".to_string())))
     }
 }
