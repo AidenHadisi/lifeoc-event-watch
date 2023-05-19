@@ -12,7 +12,7 @@ impl Prompt {
         let prompt = format!(
             "Following is an email that may contain my Church's weekly schedule. Schedule is explained in plain English. 
             Your job is to analyze this email and respond back with the weekly schedule in JSON format.
-            If the date is not included, assume it is for current week given that today is {}. Time zone is PST. 
+            If the exact date is not included, assume it is for current week and all events will occur or have occured this week, given that today is {}. Time zone is PST. 
             If the email does not contain schedule, reply \"No Schedule Found\". 
             If email contains schedule only respond in json array format below. Use following template:
             [
