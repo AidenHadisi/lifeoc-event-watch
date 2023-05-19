@@ -1,4 +1,4 @@
-use chrono::Local;
+use chrono::{Datelike, Local};
 use std::fmt::Display;
 
 /// A prompt to send to GPT-3.
@@ -7,12 +7,15 @@ pub struct Prompt(String);
 impl Prompt {
     /// Creates a new prompt.
     pub fn new(text: &str) -> Self {
-        let formatted_date = Local::now().format("%a %b %d %Y");
+        let now = Local::now();
+        let start_of_week =
+            now.date() - chrono::Duration::days(now.weekday().num_days_from_monday() as i64);
+        let end_of_week = start_of_week + chrono::Duration::days(6);
 
         let prompt = format!(
             "Following is an email that may contain my Church's weekly schedule. Schedule is explained in plain English. 
             Your job is to analyze this email and respond back with the weekly schedule in JSON format.
-            If the exact date is not included, assume it is for current week and all events will occur or have occured this week, given that today is {}. Time zone is PST. 
+            If the exact date is not included, assume it is between {} and {}. Time zone is PST.
             If the email does not contain schedule, reply \"No Schedule Found\". 
             If email contains schedule only respond in json array format below. Use following template:
             [
@@ -28,7 +31,7 @@ impl Prompt {
 
             {}
             ]",
-            formatted_date, text);
+            start_of_week.format("%a %b %d %Y"),end_of_week.format("%a %b %d %Y"), text);
 
         Self(prompt)
     }
